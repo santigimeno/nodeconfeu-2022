@@ -1,0 +1,104 @@
+version: '3.7'
+services:
+  jaeger:
+    image: jaegertracing/all-in-one:1.37
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+      - JAEGER_DISABLED=true
+    expose:
+      - 4317
+      - 4318
+    ports:
+      - 16686:16686
+
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - 9090:9090
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+
+  postgres:
+    image: postgres:10.5
+    restart: always
+    environment: 
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
+    ports:
+      - 5438:5432
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+      # copy the sql script to create tables
+      - ./sql/create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql
+      # copy the sql script to fill tables
+      - ./sql/fill_tables.sql:/docker-entrypoint-initdb.d/fill_tables.sql
+
+  api:
+    image: "node:16"
+    user: "node"
+    working_dir: /home/node/app
+    environment:
+      - JAEGER_OTLP_ENDPOINT=jaeger
+      - NODE_ENV=production
+    expose:
+      - 9464
+    ports:
+      - 9000:8080
+    volumes:
+      - ./fastify-api/:/home/node/app
+      - ./otel-common/index.js:/home/node/app/otel.js
+      - ./otel-common/tools.js:/home/node/app/tools.js
+    command: "npm start"
+
+  auth:
+    image: "node:16"
+    user: "node"
+    working_dir: /home/node/app
+    environment:
+      - JAEGER_OTLP_ENDPOINT=jaeger
+      - NODE_ENV=production
+    expose:
+      - 8080
+      - 9464
+    volumes:
+      - ./fastify-auth/:/home/node/app
+      - ./otel-common/index.js:/home/node/app/otel.js
+      - ./otel-common/tools.js:/home/node/app/tools.js
+    command: "npm start"
+
+  service_1:
+    image: "node:16"
+    user: "node"
+    working_dir: /home/node/app
+    environment:
+      - JAEGER_OTLP_ENDPOINT=jaeger
+      - NODE_ENV=production
+      - PG_HOST=postgres
+    expose:
+      - 8080
+      - 9464
+    volumes:
+      - ./fastify-psql/:/home/node/app
+      - ./otel-common/index.js:/home/node/app/otel.js
+      - ./otel-common/tools.js:/home/node/app/tools.js
+    command: "npm start"
+
+  service_2:
+    image: "node:16"
+    user: "node"
+    working_dir: /home/node/app
+    environment:
+      - JAEGER_OTLP_ENDPOINT=jaeger
+      - NODE_ENV=production
+    expose:
+      - 8080
+      - 9464
+    volumes:
+      - ./fastify-high-cpu/:/home/node/app
+      - ./otel-common/index.js:/home/node/app/otel.js
+      - ./otel-common/tools.js:/home/node/app/tools.js
+    command: "npm start"

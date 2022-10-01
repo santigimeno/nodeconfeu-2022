@@ -1,0 +1,19 @@
+{
+  "name": "otel-common",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@opentelemetry/exporter-prometheus": "^0.31.0",
+    "@opentelemetry/exporter-trace-otlp-http": "^0.31.0",
+    "@opentelemetry/sdk-metrics-base": "^0.31.0",
+    "@opentelemetry/sdk-trace-base": "^1.5.0",
+    "@opentelemetry/sdk-trace-node": "^1.5.0"
+  }
+}

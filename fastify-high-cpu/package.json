@@ -1,0 +1,22 @@
+{
+  "name": "fastify-high-cpu",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@opentelemetry/exporter-prometheus": "^0.31.0",
+    "@opentelemetry/exporter-trace-otlp-http": "^0.31.0",
+    "@opentelemetry/instrumentation-fastify": "^0.28.0",
+    "@opentelemetry/instrumentation-http": "^0.31.0",
+    "@opentelemetry/sdk-metrics-base": "^0.31.0",
+    "@opentelemetry/sdk-trace-base": "^1.6.0",
+    "@opentelemetry/sdk-trace-node": "^1.6.0",
+    "fastify": "^4.4.0"
+  }
+}
